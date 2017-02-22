@@ -1,11 +1,10 @@
 package com.shaw.websocket.assembly;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.shaw.model.User;
 import org.springframework.stereotype.Service;
 
-import com.shaw.model.User;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Cliff

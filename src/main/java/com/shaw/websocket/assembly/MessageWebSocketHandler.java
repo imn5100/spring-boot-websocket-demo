@@ -12,15 +12,17 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import java.util.Map;
 import java.util.Set;
 
+import static com.shaw.constants.BaseConstants.*;
+
 /**
  * Created by shaw on 2017/2/14 0014.
  */
 @Component
 public class MessageWebSocketHandler extends AbstractWebSocketHandler {
 
-    //写时复制，保证现场安全。set结构保证同一个会话只存储一份
+    //写时复制，保证线程安全。set结构保证同一个会话只存储一份
     Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<>();
-    //映射 id和 用户名（用户信息）
+    //映射 id和 用户名（用户信息）。实际应用应该是登录时验证用户信息，将用户信息缓存于此。这里直接接收了用户传递的name，页面显示的用户信息。
     Map<String, String> idNameMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
 
     @Override
@@ -39,15 +41,15 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
                 if (StringUtils.isEmpty(getMsg.getType()) || StringUtils.isEmpty(getMsg.getContents())) {
                     return;
                 } else {
-                    if (getMsg.getType().equalsIgnoreCase("login")) {
+                    if (getMsg.getType().equalsIgnoreCase(LOGIN_TYPE)) {
                         sessionSet.add(webSocketSession);
                         idNameMap.put(webSocketSession.getId(), getMsg.getContents());
                         int userNum = sessionSet.size();
                         BaseMsg countSendMsg = new BaseMsg();
-                        countSendMsg.setType("count");
+                        countSendMsg.setType(COUNT_TYPE);
                         countSendMsg.setContents(String.valueOf(userNum));
                         BaseMsg sendMsg = new BaseMsg();
-                        sendMsg.setType("msg");
+                        sendMsg.setType(SEND_MSG_TYPE);
                         sendMsg.setContents(getMsg.getContents() + " is Online!");
                         String countSendMsgStr = JSON.toJSONString(countSendMsg);
                         String sendMsgStr = JSON.toJSONString(sendMsg);
@@ -57,10 +59,10 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
                             session.sendMessage(countSendTextMessage);
                             session.sendMessage(sendTextMessage);
                         }
-                    } else if (getMsg.getType().equalsIgnoreCase("msg")) {
+                    } else if (getMsg.getType().equalsIgnoreCase(SEND_MSG_TYPE)) {
                         String myName = idNameMap.get(webSocketSession.getId());
                         BaseMsg sendMsg = new BaseMsg();
-                        sendMsg.setType("msg");
+                        sendMsg.setType(SEND_MSG_TYPE);
                         for (WebSocketSession session : sessionSet) {
                             sendMsg.setContents(myName + ":" + getMsg.getContents());
                             session.sendMessage(new TextMessage(JSON.toJSONString(sendMsg)));
