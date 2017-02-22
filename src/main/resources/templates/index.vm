@@ -31,21 +31,12 @@
 </html>
 <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
 <script type="text/javascript">
-    // 存储用户名到全局变量,握手成功后发送给服务器
-    var uname = prompt('请输入用户名', 'user' + uuid(8, 16));
     var ws = new SockJS("http://localhost:8082//websocket");
     ws.onopen = function () {
         var data = "系统消息：建立连接成功";
         listMsg(data);
     };
 
-    /**
-     * 分析服务器返回信息
-     *
-     * msg.type : user 普通信息;system 系统信息;handshake 握手信息;login 登陆信息; logout 退出信息;
-     * msg.from : 消息来源
-     * msg.content: 消息内容
-     */
     ws.onmessage = function (e) {
         var data = e.data;
         listMsg(data);
@@ -58,10 +49,6 @@
 
     /**
      * 在输入框内按下回车键时发送消息
-     *
-     * @param event
-     *
-     * @returns {boolean}
      */
     function confirm(event) {
         var key_num = event.keyCode;
@@ -96,42 +83,7 @@
         msg_list.scrollTop = msg_list.scrollHeight;
     }
 
-
-    /**
-     * 将数据转为json并发送
-     * @param msg
-     */
     function sendMsg(msg) {
         ws.send(msg);
-    }
-
-    /**
-     * 生产一个全局唯一ID作为用户名的默认值;
-     *
-     * @param len
-     * @param radix
-     * @returns {string}
-     */
-    function uuid(len, radix) {
-        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-        var uuid = [], i;
-        radix = radix || chars.length;
-
-        if (len) {
-            for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
-        } else {
-            var r;
-
-            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-            uuid[14] = '4';
-
-            for (i = 0; i < 36; i++) {
-                if (!uuid[i]) {
-                    r = 0 | Math.random() * 16;
-                    uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
-                }
-            }
-        }
-        return uuid.join('');
     }
 </script>
