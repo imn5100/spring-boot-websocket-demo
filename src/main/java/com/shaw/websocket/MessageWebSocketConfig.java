@@ -22,6 +22,7 @@ public class MessageWebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(messageWebSocketHandler, "/websocket").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*").withSockJS();
+        //无法兼容webSocket的浏览器可以使用sockJS，为轮询模式。  连接已http开头，为轮询模式
+        registry.addHandler(messageWebSocketHandler, "/websocket").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*");//.withSockJS();
     }
 }
