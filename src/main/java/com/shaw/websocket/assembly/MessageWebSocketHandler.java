@@ -44,21 +44,7 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
                     if (getMsg.getType().equalsIgnoreCase(LOGIN_TYPE)) {
                         sessionSet.add(webSocketSession);
                         idNameMap.put(webSocketSession.getId(), getMsg.getContents());
-                        int userNum = sessionSet.size();
-                        BaseMsg countSendMsg = new BaseMsg();
-                        countSendMsg.setType(COUNT_TYPE);
-                        countSendMsg.setContents(String.valueOf(userNum));
-                        BaseMsg sendMsg = new BaseMsg();
-                        sendMsg.setType(SEND_MSG_TYPE);
-                        sendMsg.setContents(getMsg.getContents() + " is Online!");
-                        String countSendMsgStr = JSON.toJSONString(countSendMsg);
-                        String sendMsgStr = JSON.toJSONString(sendMsg);
-                        TextMessage sendTextMessage = new TextMessage(sendMsgStr);
-                        TextMessage countSendTextMessage = new TextMessage(countSendMsgStr);
-                        for (WebSocketSession session : sessionSet) {
-                            session.sendMessage(countSendTextMessage);
-                            session.sendMessage(sendTextMessage);
-                        }
+                        notifyOnlineOrOffline(getMsg.getContents(), true);
                     } else if (getMsg.getType().equalsIgnoreCase(SEND_MSG_TYPE)) {
                         String myName = idNameMap.get(webSocketSession.getId());
                         BaseMsg sendMsg = new BaseMsg();
@@ -79,17 +65,39 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
         sessionSet.remove(webSocketSession);
-        idNameMap.remove(webSocketSession.getId());
+        String name = idNameMap.remove(webSocketSession.getId());
+        if (name != null)
+            notifyOnlineOrOffline(name, false);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         sessionSet.remove(webSocketSession);
-        idNameMap.remove(webSocketSession.getId());
+        String name = idNameMap.remove(webSocketSession.getId());
+        if (name != null)
+            notifyOnlineOrOffline(name, false);
     }
 
     @Override
     public boolean supportsPartialMessages() {
         return false;
+    }
+
+    private void notifyOnlineOrOffline(String onlineUser, boolean isOnline) throws Exception {
+        int userNum = sessionSet.size();
+        BaseMsg countSendMsg = new BaseMsg();
+        countSendMsg.setType(COUNT_TYPE);
+        countSendMsg.setContents(String.valueOf(userNum));
+        BaseMsg sendMsg = new BaseMsg();
+        sendMsg.setType(SEND_MSG_TYPE);
+        sendMsg.setContents(onlineUser + (isOnline ? " is Online!" : " is Offline"));
+        String countSendMsgStr = JSON.toJSONString(countSendMsg);
+        String sendMsgStr = JSON.toJSONString(sendMsg);
+        TextMessage sendTextMessage = new TextMessage(sendMsgStr);
+        TextMessage countSendTextMessage = new TextMessage(countSendMsgStr);
+        for (WebSocketSession session : sessionSet) {
+            session.sendMessage(countSendTextMessage);
+            session.sendMessage(sendTextMessage);
+        }
     }
 }
