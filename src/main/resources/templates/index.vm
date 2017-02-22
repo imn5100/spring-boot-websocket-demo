@@ -4,8 +4,7 @@
     <title></title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
 </head>
-web socket 项目 不依赖后端控制。直接使用浏览器打开index.html即可运行
 <body>
-Hello
+vm测试文件
 </body>
 </html>
