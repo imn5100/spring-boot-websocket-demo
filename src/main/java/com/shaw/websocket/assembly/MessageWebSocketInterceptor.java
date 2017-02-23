@@ -15,7 +15,6 @@ import java.util.Map;
 public class MessageWebSocketInterceptor extends HttpSessionHandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        //验证ws登录，判断是否运行连接
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }
 

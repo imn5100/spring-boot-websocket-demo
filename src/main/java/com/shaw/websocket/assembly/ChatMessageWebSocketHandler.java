@@ -21,20 +21,24 @@ import static com.shaw.constants.BaseConstants.*;
  * 群聊消息处理ws服务handler
  */
 @Component
-public class MessageWebSocketHandler extends AbstractWebSocketHandler {
+public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
 
-    //写时复制，保证线程安全。set结构保证同一个会话只存储一份
+    //写时复制Set，保证线程安全。set结构保证同一个会话只存储一份
     private Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<WebSocketSession>();
     //映射 id和 用户名（用户信息）。实际应用应该是登录时验证用户信息，将用户信息缓存于此。这里直接接收了用户传递的name，页面显示的用户信息。
     private Map<String, String> idNameMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
     Logger logger = LoggerFactory.getLogger(DrawMessageWebSocketHandler.class);
 
+    /**
+     * 客户端连接后的操作
+     */
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        sessionSet.add(webSocketSession);
     }
 
-
+    /**
+     * 接收消息后的操作
+     */
     @Override
     public void handleTextMessage(WebSocketSession webSocketSession, TextMessage webSocketMessage) throws Exception {
         String msg = webSocketMessage.getPayload();
@@ -46,11 +50,12 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
                 if (StringUtils.isEmpty(getMsg.getType()) || StringUtils.isEmpty(getMsg.getContents())) {
                     return;
                 } else {
+                    //收到登录消息
                     if (getMsg.getType().equalsIgnoreCase(LOGIN_TYPE)) {
                         sessionSet.add(webSocketSession);
                         idNameMap.put(webSocketSession.getId(), getMsg.getContents());
                         notifyOnlineOrOffline(getMsg.getContents(), true);
-                    } else if (getMsg.getType().equalsIgnoreCase(SEND_MSG_TYPE)) {
+                    } else if (getMsg.getType().equalsIgnoreCase(SEND_MSG_TYPE)) { //收到聊天消息
                         String myName = idNameMap.get(webSocketSession.getId());
                         BaseMsg sendMsg = new BaseMsg();
                         sendMsg.setType(SEND_MSG_TYPE);
@@ -67,14 +72,21 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
+    /**
+     * 发送异常后的操作
+     */
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
         sessionSet.remove(webSocketSession);
         String name = idNameMap.remove(webSocketSession.getId());
         if (name != null)
             notifyOnlineOrOffline(name, false);
+        logger.error("ChatMessageWebSocketHandler Exception:", throwable);
     }
 
+    /**
+     * 客户端断开连接后的操作
+     */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         sessionSet.remove(webSocketSession);
@@ -83,11 +95,10 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
             notifyOnlineOrOffline(name, false);
     }
 
-    @Override
-    public boolean supportsPartialMessages() {
-        return false;
-    }
-
+    /**
+     * 推送给所有用户 离线上线的消息。
+     * 同时推送在线人数变化
+     */
     private void notifyOnlineOrOffline(String onlineUser, boolean isOnline) throws Exception {
         int userNum = sessionSet.size();
         BaseMsg countSendMsg = new BaseMsg();

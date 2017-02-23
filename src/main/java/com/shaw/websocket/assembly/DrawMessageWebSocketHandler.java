@@ -26,12 +26,18 @@ public class DrawMessageWebSocketHandler extends AbstractWebSocketHandler {
     Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<>();
     Logger logger = LoggerFactory.getLogger(DrawMessageWebSocketHandler.class);
 
+    /**
+     * 一旦用户连接上 就加入set中，进行绘图事件推送
+     */
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         sessionSet.add(webSocketSession);
     }
 
-
+    /**
+     * 这里接收到了某个客户端的绘图触发的 事件 转换而成的消息。
+     * 不需要特殊处理，转发给其他客户端即可。
+     */
     @Override
     public void handleTextMessage(WebSocketSession webSocketSession, TextMessage webSocketMessage) throws Exception {
         String msg = webSocketMessage.getPayload();
@@ -55,11 +61,18 @@ public class DrawMessageWebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
+    /**
+     * 处理异常
+     */
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
         sessionSet.remove(webSocketSession);
+        logger.error("DrawMessageWebSocketHandler Exception:", throwable);
     }
 
+    /**
+     * 关闭的连接从集合中移除。
+     */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         sessionSet.remove(webSocketSession);
