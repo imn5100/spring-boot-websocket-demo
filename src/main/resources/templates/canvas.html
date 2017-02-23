@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+</head>
+<body>
+<div id="canvas" style="text-align:center" height="350" width="520">
+    <canvas id="myCanvas" style="border: 1px solid #999;" height="350" width="520">
+        您的浏览器不支持canvas!
+    </canvas>
+</div>
+</body>
+<script type="text/javascript">
+    var ws = new WebSocket("ws://localhost:8082//websocket");
+    function Draw(arg) {
+        if (arg.nodeType) {
+            this.canvas = arg;
+        } else if (typeof arg == 'string') {
+            this.canvas = document.getElementById(arg);
+        } else {
+            return;
+        }
+        this.init();
+    }
+    Draw.prototype = {
+        init: function () {
+            var that = this;
+            if (!this.canvas.getContext) {
+                return;
+            }
+            this.context = this.canvas.getContext('2d');
+            this.canvas.onselectstart = function () {
+                return false;  //修复chrome下光标样式的问题
+            };
+            this.canvas.onmousedown = function (event) {
+                that.drawBegin(event);
+            };
+        },
+        drawBegin: function (e, byWs) {
+            var that = this,
+                stage_info = this.canvas.getBoundingClientRect();
+            window.getSelection ? window.getSelection().removeAllRanges() :
+                document.selection.empty();  //清除文本的选中
+            this.context.moveTo(
+                e.clientX - stage_info.left,
+                e.clientY - stage_info.top
+            );
+            document.onmousemove = function (event) {
+                that.drawing(event);
+            };
+            if (byWs != true)
+                ws.send(JSON.stringify({"type": "drawBegin", "clientX": e.clientX, "clientY": e.clientY}))
+            document.onmouseup = this.drawEnd;
+        },
+        drawing: function (e, byWs) {
+            var stage_info = this.canvas.getBoundingClientRect();
+            this.context.lineTo(
+                e.clientX - stage_info.left,
+                e.clientY - stage_info.top
+            );
+            if (byWs != true)
+                ws.send(JSON.stringify({"type": "drawing", "clientX": e.clientX, "clientY": e.clientY}))
+            this.context.stroke();
+        },
+        drawEnd: function (e, byWs) {
+            document.onmousemove = document.onmouseup = null;
+            if (byWs != true)
+                ws.send(JSON.stringify({"type": "drawEnd"}))
+        }
+    };
+    var draw = new Draw('myCanvas');
+    ws.onmessage = function (e) {
+        console.log(e.data)
+        var msg = JSON.parse(e.data);
+        switch (msg.type) {
+            case "drawBegin":
+                draw.drawBegin(msg, true);
+                break;
+            case "drawing":
+                draw.drawing(msg, true)
+                break;
+            case "drawEnd":
+                draw.drawEnd(msg, true)
+                break;
+            default:
+                break;
+        }
+    }
+</script>
+
+</html>
