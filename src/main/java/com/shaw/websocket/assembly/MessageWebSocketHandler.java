@@ -2,6 +2,8 @@ package com.shaw.websocket.assembly;
 
 import com.alibaba.fastjson.JSON;
 import com.shaw.model.BaseMsg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.CloseStatus;
@@ -16,14 +18,16 @@ import static com.shaw.constants.BaseConstants.*;
 
 /**
  * Created by shaw on 2017/2/14 0014.
+ * 群聊消息处理ws服务handler
  */
 @Component
 public class MessageWebSocketHandler extends AbstractWebSocketHandler {
 
     //写时复制，保证线程安全。set结构保证同一个会话只存储一份
-    Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<>();
+    private Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<>();
     //映射 id和 用户名（用户信息）。实际应用应该是登录时验证用户信息，将用户信息缓存于此。这里直接接收了用户传递的name，页面显示的用户信息。
-    Map<String, String> idNameMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
+    private Map<String, String> idNameMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
+    Logger logger = LoggerFactory.getLogger(DrawMessageWebSocketHandler.class);
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
@@ -57,7 +61,7 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("handleChatMessage error", e);
                 webSocketSession.close();
             }
         }

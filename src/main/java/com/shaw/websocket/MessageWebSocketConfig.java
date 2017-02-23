@@ -19,13 +19,13 @@ public class MessageWebSocketConfig implements WebSocketConfigurer {
     @Autowired
     private MessageWebSocketHandler messageWebSocketHandler;
     @Autowired
-    private MessageWebSocketInterceptor messageWebSocketInterceptor;
-    @Autowired
     private DrawMessageWebSocketHandler drawMessageWebSocketHandler;
+    @Autowired
+    private MessageWebSocketInterceptor messageWebSocketInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        //无法兼容webSocket的浏览器可以使用sockJS，为轮询模式。  连接已http开头，为轮询模式
+        //无法兼容webSocket的浏览器可以使用sockJS，为轮询模式，连接为http开头
         registry.addHandler(messageWebSocketHandler, "/ws/chat").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*");//.withSockJS();
         registry.addHandler(drawMessageWebSocketHandler, "/ws/draw").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*");//.withSockJS();
     }
