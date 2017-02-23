@@ -2,7 +2,7 @@
 Simple demo of spring-boot build webSocket server.</br>
 使用Spring-boot的webSocket模块一个简单的例子。<br>
 chat.html 基于ws的网页端群聊demo。<br>
-canvas.html 基于canvas于ws的同步画图demo,多人同时一起画一幅图。<br>
+canvas.html 基于canvas与ws的同步绘图demo,多人同步绘制一幅图。<br>
 运行：
 ```
 mvn spring-boot:run
