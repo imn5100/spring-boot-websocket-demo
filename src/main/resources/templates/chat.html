@@ -35,7 +35,7 @@
     while (uname == null || uname == "") {
         uname = prompt('请输入用户名', "");
     }
-    var ws = new WebSocket("ws://localhost:8082//websocket");
+    var ws = new WebSocket("ws://localhost:8082/ws/chat");
     ws.onopen = function () {
         var data = "系统消息：建立连接成功";
         listMsg(data);

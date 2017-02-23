@@ -1,5 +1,6 @@
 package com.shaw.websocket;
 
+import com.shaw.websocket.assembly.DrawMessageWebSocketHandler;
 import com.shaw.websocket.assembly.MessageWebSocketHandler;
 import com.shaw.websocket.assembly.MessageWebSocketInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,13 @@ public class MessageWebSocketConfig implements WebSocketConfigurer {
     private MessageWebSocketHandler messageWebSocketHandler;
     @Autowired
     private MessageWebSocketInterceptor messageWebSocketInterceptor;
+    @Autowired
+    private DrawMessageWebSocketHandler drawMessageWebSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         //无法兼容webSocket的浏览器可以使用sockJS，为轮询模式。  连接已http开头，为轮询模式
-        registry.addHandler(messageWebSocketHandler, "/websocket").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*");//.withSockJS();
+        registry.addHandler(messageWebSocketHandler, "/ws/chat").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*");//.withSockJS();
+        registry.addHandler(drawMessageWebSocketHandler, "/ws/draw").addInterceptors(messageWebSocketInterceptor).setAllowedOrigins("*");//.withSockJS();
     }
 }

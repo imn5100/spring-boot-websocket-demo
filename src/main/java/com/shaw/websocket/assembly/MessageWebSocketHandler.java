@@ -39,14 +39,6 @@ public class MessageWebSocketHandler extends AbstractWebSocketHandler {
         } else if (msg.startsWith("{")) {
             try {
                 BaseMsg getMsg = JSON.parseObject(msg, BaseMsg.class);
-                //画图事件消息。暂时不需要解析直接传递给其他客户端
-                if (!StringUtils.isEmpty(getMsg.getType()) && getMsg.getType().startsWith(DRAW_TYPE)) {
-                    for (WebSocketSession session : sessionSet) {
-                        if (session != webSocketSession)
-                            session.sendMessage(webSocketMessage);
-                    }
-                    return;
-                }
                 if (StringUtils.isEmpty(getMsg.getType()) || StringUtils.isEmpty(getMsg.getContents())) {
                     return;
                 } else {
