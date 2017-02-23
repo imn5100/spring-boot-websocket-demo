@@ -64,9 +64,4 @@ public class DrawMessageWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         sessionSet.remove(webSocketSession);
     }
-
-    @Override
-    public boolean supportsPartialMessages() {
-        return false;
-    }
 }

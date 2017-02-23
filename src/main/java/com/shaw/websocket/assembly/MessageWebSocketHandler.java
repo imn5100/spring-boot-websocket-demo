@@ -24,7 +24,7 @@ import static com.shaw.constants.BaseConstants.*;
 public class MessageWebSocketHandler extends AbstractWebSocketHandler {
 
     //写时复制，保证线程安全。set结构保证同一个会话只存储一份
-    private Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<>();
+    private Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<WebSocketSession>();
     //映射 id和 用户名（用户信息）。实际应用应该是登录时验证用户信息，将用户信息缓存于此。这里直接接收了用户传递的name，页面显示的用户信息。
     private Map<String, String> idNameMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
     Logger logger = LoggerFactory.getLogger(DrawMessageWebSocketHandler.class);
