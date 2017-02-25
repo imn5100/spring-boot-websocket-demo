@@ -93,6 +93,10 @@
                 break;
         }
     }
+    ws.onerror = function (e) {
+        ws.close();
+        alert("出错了，请刷新后重试")
+    }
 </script>
 
 </html>
