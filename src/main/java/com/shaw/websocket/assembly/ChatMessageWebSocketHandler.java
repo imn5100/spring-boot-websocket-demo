@@ -72,6 +72,8 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
         }
     }
 
+    public static final String CLINET_BROKEN_PIPE_EXCEPTION = "java.io.IOException: Broken pipe";
+
     /**
      * 发送异常后的操作
      */
@@ -81,7 +83,9 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
         String name = idNameMap.remove(webSocketSession.getId());
         if (name != null)
             notifyOnlineOrOffline(name, false);
-        logger.error("ChatMessageWebSocketHandler Exception:", throwable);
+        //不记录客户端主动断开连接异常
+        if (!CLINET_BROKEN_PIPE_EXCEPTION.equalsIgnoreCase(throwable.getMessage()))
+            logger.error("ChatMessageWebSocketHandler Exception:", throwable);
     }
 
     /**

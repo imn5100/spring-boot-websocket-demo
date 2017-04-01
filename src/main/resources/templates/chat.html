@@ -12,7 +12,7 @@
 </head>
 <body>
 <div style="width: 800px;height: 600px;margin: 30px auto;text-align: center">
-    <h1>websocket聊天室</h1>
+    <h1>websocket</h1>
     <div style="width: 800px;border: 1px solid gray;height: 300px;">
         <div style="width: 200px;height: 300px;float: left;text-align: left;">
             <p><span>当前在线:</span><span id="user_num">0</span></p>
@@ -36,7 +36,7 @@
         uname = prompt('请输入用户名', "");
     }
     //端口号可以在application.properties 使用server.port配置，默认8080
-    var ws = new WebSocket("ws://localhost:8082/ws/chat");
+    var ws = new WebSocket("ws://clinic2.dxy.net/ws/chat");
     ws.onopen = function () {
         var data = "系统消息：建立连接成功";
         listMsg(data);
