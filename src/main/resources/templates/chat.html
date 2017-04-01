@@ -49,7 +49,8 @@
         if (msg.type == 'msg')
             listMsg(msg.contents);
         else if (msg.type == 'count') {
-            document.getElementById("user_num").innerHTML = msg.contents;
+            document.getElementById("user_num").innerHTML = msg.count;
+            document.getElementById("user_list").innerHTML = msg.contents;
         } else {
             console.log("Useless msg")
         }

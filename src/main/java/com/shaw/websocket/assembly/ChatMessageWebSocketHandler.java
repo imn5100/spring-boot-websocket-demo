@@ -103,7 +103,15 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
         int userNum = sessionSet.size();
         BaseMsg countSendMsg = new BaseMsg();
         countSendMsg.setType(COUNT_TYPE);
-        countSendMsg.setContents(String.valueOf(userNum));
+        countSendMsg.setCount(userNum);
+        StringBuilder sb = new StringBuilder();
+        for (String name : idNameMap.values()) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(name);
+        }
+        countSendMsg.setContents(sb.toString());
         BaseMsg sendMsg = new BaseMsg();
         sendMsg.setType(SEND_MSG_TYPE);
         sendMsg.setContents(onlineUser + (isOnline ? " is Online!" : " is Offline"));

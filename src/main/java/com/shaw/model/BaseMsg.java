@@ -8,6 +8,7 @@ import com.shaw.constants.BaseConstants;
 public class BaseMsg {
     private String type;
     private String contents;
+    private Integer count;
 
     //默认消息类型 普通为发送消息
     public BaseMsg() {
@@ -28,5 +29,13 @@ public class BaseMsg {
 
     public void setContents(String contents) {
         this.contents = contents;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }
