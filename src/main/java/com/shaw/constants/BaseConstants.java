@@ -1,7 +1,9 @@
 package com.shaw.constants;
 
 /**
- * Created by shaw on 2017/2/22 0022.
+ *
+ * @author shaw
+ * @date 2017/2/22 0022
  */
 public class BaseConstants {
     public static final String LOGIN_TYPE = "login";

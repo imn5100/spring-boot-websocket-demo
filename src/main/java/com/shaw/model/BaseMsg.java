@@ -3,7 +3,9 @@ package com.shaw.model;
 import com.shaw.constants.BaseConstants;
 
 /**
- * Created by shaw on 2017/2/22 0022.
+ *
+ * @author shaw
+ * @date 2017/2/22 0022
  */
 public class BaseMsg {
     private String type;

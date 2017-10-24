@@ -80,11 +80,13 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
         sessionSet.remove(webSocketSession);
         String name = idNameMap.remove(webSocketSession.getId());
-        if (name != null)
+        if (name != null) {
             notifyOnlineOrOffline(name, false);
+        }
         //不记录客户端主动断开连接异常
-        if (!CLINET_BROKEN_PIPE_EXCEPTION.equalsIgnoreCase(throwable.getMessage()))
+        if (!CLINET_BROKEN_PIPE_EXCEPTION.equalsIgnoreCase(throwable.getMessage())) {
             logger.error("ChatMessageWebSocketHandler Exception:", throwable);
+        }
     }
 
     /**
@@ -94,8 +96,9 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         sessionSet.remove(webSocketSession);
         String name = idNameMap.remove(webSocketSession.getId());
-        if (name != null)
+        if (name != null) {
             notifyOnlineOrOffline(name, false);
+        }
     }
 
     /**

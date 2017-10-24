@@ -12,7 +12,9 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 import java.util.Map;
 
 /**
- * Created by shaw on 2017/2/14 0014.
+ *
+ * @author shaw
+ * @date 2017/2/14 0014
  */
 @Component
 public class MessageWebSocketInterceptor extends HttpSessionHandshakeInterceptor {
@@ -23,10 +25,11 @@ public class MessageWebSocketInterceptor extends HttpSessionHandshakeInterceptor
         if (request instanceof ServletServerHttpRequest) {
             ServletServerHttpRequest serverRequest = (ServletServerHttpRequest) request;
             Map<String, Object> map = Utils.getParamsFromCookie(serverRequest.getServletRequest(), COOKIE_NAME);
-            if (!CollectionUtils.isEmpty(map))
+            if (!CollectionUtils.isEmpty(map)) {
                 for (Map.Entry entry : map.entrySet()) {
                     System.out.println(entry.getKey() + ":" + entry.getValue());
                 }
+            }
         }
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }

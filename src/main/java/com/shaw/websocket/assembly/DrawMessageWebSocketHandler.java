@@ -16,13 +16,16 @@ import java.util.Set;
 import static com.shaw.constants.BaseConstants.DRAW_TYPE;
 
 /**
- * Created by shaw on 2017/2/23 0023.
+ * @author shaw
+ * @date 2017/2/23 0023
  * 同步画图ws服务handler
  * 简单的事件传递handler，接收前端的画图事件，发送给其他链接了此服务的客户端
  */
 @Component
 public class DrawMessageWebSocketHandler extends AbstractWebSocketHandler {
-    //写时复制，保证线程安全。set结构保证同一个会话只存储一份
+    /**
+     * 写时复制，保证线程安全。set结构保证同一个会话只存储一份
+     */
     Set<WebSocketSession> sessionSet = new java.util.concurrent.CopyOnWriteArraySet<>();
     Logger logger = LoggerFactory.getLogger(DrawMessageWebSocketHandler.class);
 
@@ -42,15 +45,15 @@ public class DrawMessageWebSocketHandler extends AbstractWebSocketHandler {
     public void handleTextMessage(WebSocketSession webSocketSession, TextMessage webSocketMessage) throws Exception {
         String msg = webSocketMessage.getPayload();
         if (StringUtils.isEmpty(msg)) {
-            return;
         } else if (msg.startsWith("{")) {
             try {
                 BaseMsg getMsg = JSON.parseObject(msg, BaseMsg.class);
                 //画图事件消息。暂时不需要解析直接传递给其他客户端
                 if (!StringUtils.isEmpty(getMsg.getType()) && getMsg.getType().startsWith(DRAW_TYPE)) {
                     for (WebSocketSession session : sessionSet) {
-                        if (session != webSocketSession)
+                        if (session != webSocketSession) {
                             session.sendMessage(webSocketMessage);
+                        }
                     }
                     return;
                 }
