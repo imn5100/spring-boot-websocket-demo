@@ -36,7 +36,7 @@
         uname = prompt('请输入用户名', "");
     }
     //端口号可以在application.properties 使用server.port配置，默认8080
-    var ws = new WebSocket("ws://clinic2.dxy.net/ws/chat");
+    var ws = new WebSocket("ws://localhost:8082/ws/chat");
     ws.onopen = function () {
         var data = "系统消息：建立连接成功";
         listMsg(data);

@@ -1,6 +1,6 @@
 package com.shaw.websocket.assembly;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.shaw.model.BaseMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class DrawMessageWebSocketHandler extends AbstractWebSocketHandler {
         if (StringUtils.isEmpty(msg)) {
         } else if (msg.startsWith("{")) {
             try {
-                BaseMsg getMsg = JSON.parseObject(msg, BaseMsg.class);
+                BaseMsg getMsg = new Gson().fromJson(msg, BaseMsg.class);
                 //画图事件消息。暂时不需要解析直接传递给其他客户端
                 if (!StringUtils.isEmpty(getMsg.getType()) && getMsg.getType().startsWith(DRAW_TYPE)) {
                     for (WebSocketSession session : sessionSet) {

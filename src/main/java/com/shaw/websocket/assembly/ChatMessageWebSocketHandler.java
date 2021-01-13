@@ -1,6 +1,6 @@
 package com.shaw.websocket.assembly;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.shaw.model.BaseMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
             return;
         } else if (msg.startsWith("{")) {
             try {
-                BaseMsg getMsg = JSON.parseObject(msg, BaseMsg.class);
+                BaseMsg getMsg = new Gson().fromJson(msg, BaseMsg.class);
                 if (StringUtils.isEmpty(getMsg.getType()) || StringUtils.isEmpty(getMsg.getContents())) {
                     return;
                 } else {
@@ -60,7 +60,7 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
                         sendMsg.setType(SEND_MSG_TYPE);
                         for (WebSocketSession session : sessionSet) {
                             sendMsg.setContents(myName + ":" + getMsg.getContents());
-                            session.sendMessage(new TextMessage(JSON.toJSONString(sendMsg)));
+                            session.sendMessage(new TextMessage(new Gson().toJson(sendMsg)));
                         }
                     }
                 }
@@ -121,8 +121,8 @@ public class ChatMessageWebSocketHandler extends AbstractWebSocketHandler {
         BaseMsg sendMsg = new BaseMsg();
         sendMsg.setType(SEND_MSG_TYPE);
         sendMsg.setContents(onlineUser + (isOnline ? " is Online!" : " is Offline"));
-        String countSendMsgStr = JSON.toJSONString(countSendMsg);
-        String sendMsgStr = JSON.toJSONString(sendMsg);
+        String countSendMsgStr = new Gson().toJson(countSendMsg);
+        String sendMsgStr = new Gson().toJson(sendMsg);
         TextMessage sendTextMessage = new TextMessage(sendMsgStr);
         TextMessage countSendTextMessage = new TextMessage(countSendMsgStr);
         for (WebSocketSession session : sessionSet) {
